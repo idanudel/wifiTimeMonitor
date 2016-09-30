@@ -1,0 +1,71 @@
+package com.example.idanm.wifitimemonitor.db;
+
+/**
+ * Created by idanm on 9/16/16.
+ */
+public class DbEntriesParams {
+
+    public static final String TABLE_NAME_WIFIMONITOR = "WIFIMONITOR";
+    public static final String TABLE_NAME_WIFIMONITOR_ENTRY = "WIFIMONITOR_ENTRY";
+    public static final String TABLE_NAME_WIFIMONITOR_ENTRY_SSIDS = "WIFIMONITOR_ENTRY_SSIDS";
+    public static final String COMMA_SEP = ",";
+
+    //Column Names WIFIMONITOR table
+    public static final String COLUMN_NAME_ID = "ID";
+    public static final String COLUMN_NAME_WIFI_MONITOR_ID = "WIFI_MONITOR_ID";
+    public static final String COLUMN_NAME_TIME = "DATE";
+    public static final String COLUMN_OPERATION = "OPERATION";
+    public static final String COLUMN_SSID_NAME = "SSID_NAME";
+
+
+    //Column Names WIFIMONITOR_ENTTY table
+    public static final String COLUMN_NAME_WIFIMONITOR_ENTRY_ID = "ID";
+    public static final String COLUMN_NAME_WIFIMONITOR_ENTRY_NAME = "NAME";
+
+    //Column Names WIFIMONITOR_ENTTY_SSIDS table
+    public static final String COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_ID = "ID";
+    public static final String COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_NAME = "SSIDNAME";
+    public static final String COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID = "WIFIMONITOR_ENTRY_ID";
+
+
+    //Column Type
+    public static final String DATE_INTEGER_AUTOINCREMENT_TYPE_TYPE = " INTEGER PRIMARY KEY AUTOINCREMENT";
+    public static final String TEXT_TYPE = " TEXT";
+    public static final String DATE_INTEGER_TYPE = " INTEGER";
+
+
+    public static final String FOREIGN_KEY = " FOREIGN KEY";
+
+
+
+
+    //Create/Drop
+    public static final String SQL_CREATE_ENTRIES_WIFIMONITOR = "CREATE TABLE " + TABLE_NAME_WIFIMONITOR + " (" +
+            COLUMN_NAME_ID+ DATE_INTEGER_AUTOINCREMENT_TYPE_TYPE+ COMMA_SEP +
+            COLUMN_NAME_WIFI_MONITOR_ID+DATE_INTEGER_TYPE +COMMA_SEP+
+            COLUMN_NAME_TIME + DATE_INTEGER_TYPE + COMMA_SEP +
+            COLUMN_OPERATION + TEXT_TYPE + COMMA_SEP +
+            COLUMN_SSID_NAME + TEXT_TYPE +" )";
+
+
+    public static final String SQL_CREATE_ENTRIES_WIFIMONITOR_ENTRY = "CREATE TABLE " + TABLE_NAME_WIFIMONITOR_ENTRY + " (" +
+            COLUMN_NAME_WIFIMONITOR_ENTRY_ID+ DATE_INTEGER_AUTOINCREMENT_TYPE_TYPE+ COMMA_SEP +
+            COLUMN_NAME_WIFIMONITOR_ENTRY_NAME +TEXT_TYPE + " )";
+
+
+    public static final String SQL_CREATE_ENTRIES_WIFIMONITOR_ENTRY_SSIDS = "CREATE TABLE " + TABLE_NAME_WIFIMONITOR_ENTRY_SSIDS + " (" +
+            COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_ID+ DATE_INTEGER_AUTOINCREMENT_TYPE_TYPE+ COMMA_SEP +
+            COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_NAME + TEXT_TYPE + COMMA_SEP +
+            COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID + DATE_INTEGER_TYPE + COMMA_SEP +
+            FOREIGN_KEY + "("+COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID+")" +"REFERENCES "+TABLE_NAME_WIFIMONITOR_ENTRY+"("+COLUMN_NAME_WIFIMONITOR_ENTRY_ID+")"
+            +" )";
+
+
+
+    public static final String SQL_DELETE_ENTRIES_WIFIMONITOR = "DROP TABLE IF EXISTS " + TABLE_NAME_WIFIMONITOR;
+    public static final String SQL_DELETE_ENTRIES_WIFIMONITOR_ENTRY = "DROP TABLE IF EXISTS " + TABLE_NAME_WIFIMONITOR_ENTRY;
+    public static final String SQL_DELETE_ENTRIES_WIFIMONITOR_ENTRY_SSIDS = "DROP TABLE IF EXISTS " + TABLE_NAME_WIFIMONITOR_ENTRY_SSIDS;
+
+
+
+}
