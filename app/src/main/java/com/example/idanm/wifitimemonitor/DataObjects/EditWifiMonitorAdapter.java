@@ -67,6 +67,7 @@ public class EditWifiMonitorAdapter extends ArrayAdapter<SsidName> {
         }
         SsidName ssidName = ssidList.get(position);
         holder.ssidName.setText(ssidName.getSsidName());
+        holder.name.setChecked(ssidName.isSelected());
         holder.name.setTag(ssidName);
         return convertView;
 
