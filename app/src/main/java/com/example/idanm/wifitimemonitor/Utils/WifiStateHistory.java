@@ -1,6 +1,4 @@
-package com.example.idanm.wifitimemonitor.Utils;
-
-import android.net.ConnectivityManager;
+package com.example.idanm.wifitimemonitor.utils;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;

@@ -1,4 +1,4 @@
-package com.example.idanm.wifitimemonitor.Activities;
+package com.example.idanm.wifitimemonitor.activities;
 
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
@@ -13,8 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.idanm.wifitimemonitor.DataObjects.EditWifiMonitorAdapter;
-import com.example.idanm.wifitimemonitor.DataObjects.SsidName;
+import com.example.idanm.wifitimemonitor.adapters.EditWifiMonitorAdapter;
+import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.SsidName;
 import com.example.idanm.wifitimemonitor.R;
 import com.example.idanm.wifitimemonitor.db.DbHelper;
 

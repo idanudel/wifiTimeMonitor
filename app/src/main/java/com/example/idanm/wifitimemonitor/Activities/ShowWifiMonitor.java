@@ -1,4 +1,4 @@
-package com.example.idanm.wifitimemonitor.Activities;
+package com.example.idanm.wifitimemonitor.activities;
 
 import android.database.Cursor;
 import android.os.Bundle;

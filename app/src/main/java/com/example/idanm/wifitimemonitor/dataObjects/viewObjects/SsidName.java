@@ -1,4 +1,4 @@
-package com.example.idanm.wifitimemonitor.DataObjects;
+package com.example.idanm.wifitimemonitor.dataObjects.viewObjects;
 
 /**
  * Created by idanm on 9/29/16.

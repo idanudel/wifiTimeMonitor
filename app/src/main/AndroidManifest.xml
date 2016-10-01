@@ -21,11 +21,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.ShowWifiMonitor"
+            android:name=".activities.ShowWifiMonitor"
             android:label="@string/title_activity_show_wifi_monitor"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activities.EditWifiMonitor"
+            android:name=".activities.EditWifiMonitor"
             android:label="@string/title_activity_edit_wifi_monitor"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

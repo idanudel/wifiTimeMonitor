@@ -1,4 +1,4 @@
-package com.example.idanm.wifitimemonitor.DataObjects;
+package com.example.idanm.wifitimemonitor.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.SsidName;
 import com.example.idanm.wifitimemonitor.R;
 
 import java.util.ArrayList;

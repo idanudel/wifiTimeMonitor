@@ -6,17 +6,23 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.idanm.wifitimemonitor.DataObjects.OperationType;
+import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.AssociateSsids;
+import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.OperationType;
+import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorConnections;
+import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorEntryEntity;
+import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.WifiMonitorEntry;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by idanm on 9/16/16.
  */
 public class DbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "FeedReader.db";
 
     public DbHelper(Context context) {
@@ -67,10 +73,37 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public ArrayList<WifiMonitorEntryEntity> getWifiAllMonitorEntries(){
+        ArrayList<WifiMonitorEntryEntity> wifiMonitorEntryEntities = new ArrayList<>();
+        String[] projection = {
+                DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_ID,
+                DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_NAME
+        };
+        String sortOrder = DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_ID + " ASC";
+
+        Cursor cursor = getReadableDatabase().query(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY, projection, null, null, null, null, sortOrder);
+
+        if (cursor.moveToFirst()){
+            do{
+                WifiMonitorEntryEntity wifiMonitorEntryEntity = new WifiMonitorEntryEntity();
+                int id = cursor.getInt(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_ID));
+                String wifiMonitorName = cursor.getString(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_NAME));
+                wifiMonitorEntryEntity.setId(id);
+                wifiMonitorEntryEntity.setWifiMonitorEntryName(wifiMonitorName);
+                wifiMonitorEntryEntity.setAssociateSsidses(getAssociateSsidses(id));
+                wifiMonitorEntryEntity.setWifiMonitorConnectionses(getWifiMonitorConnectionses(id));
+                wifiMonitorEntryEntities.add(wifiMonitorEntryEntity);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
 
 
+        return wifiMonitorEntryEntities;
+    }
 
-    public Cursor getWifiMonitorByWifiKey(Long wifiKey){
+
+    public ArrayList<WifiMonitorConnections> getWifiMonitorConnectionses(int wifiKey){
+        ArrayList<WifiMonitorConnections> wifiMonitorConnectionses = new ArrayList<>();
         String[] projection = {
                 DbEntriesParams.COLUMN_NAME_ID,
                 DbEntriesParams.COLUMN_NAME_TIME,
@@ -79,10 +112,30 @@ public class DbHelper extends SQLiteOpenHelper {
                 DbEntriesParams.COLUMN_SSID_NAME
         };
         String selection = DbEntriesParams.COLUMN_NAME_WIFI_MONITOR_ID + " = ?";
-        String [] selectionArgs = { wifiKey.toString() };
+        String [] selectionArgs = { wifiKey +""};
         String sortOrder = DbEntriesParams.COLUMN_NAME_TIME + " DESC";
-        return getReadableDatabase().query(DbEntriesParams.TABLE_NAME_WIFIMONITOR,projection,selection,selectionArgs,null,null,sortOrder);
-     }
+        Cursor cursor = getReadableDatabase().query(DbEntriesParams.TABLE_NAME_WIFIMONITOR, projection, selection, selectionArgs, null, null, sortOrder);
+
+        if (cursor.moveToFirst()){
+            do{
+                WifiMonitorConnections wifiMonitorConnections = new WifiMonitorConnections();
+                int id = cursor.getInt(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_ID));
+                Long time = cursor.getLong(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_TIME));
+                int wifiMonitorEntryId = cursor.getInt(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_WIFI_MONITOR_ID));
+                String op = cursor.getString(cursor.getColumnIndex(DbEntriesParams.COLUMN_OPERATION));
+                String ssidName = cursor.getString(cursor.getColumnIndex(DbEntriesParams.COLUMN_SSID_NAME));
+                wifiMonitorConnections.setId(id);
+                wifiMonitorConnections.setWifiMonitorEntryId(wifiMonitorEntryId);
+                wifiMonitorConnections.setDate(new Date(time));
+                wifiMonitorConnections.setSsidName(ssidName);
+                wifiMonitorConnections.setOp(op);
+                wifiMonitorConnectionses.add(wifiMonitorConnections);
+
+            }while(cursor.moveToNext());
+        }
+
+        return wifiMonitorConnectionses;
+    }
     public Cursor getWifiMonitor(){
         String[] projection = {
                 DbEntriesParams.COLUMN_NAME_ID,
@@ -93,6 +146,35 @@ public class DbHelper extends SQLiteOpenHelper {
         };
         String sortOrder = DbEntriesParams.COLUMN_NAME_TIME + " ASC";
         return getReadableDatabase().query(DbEntriesParams.TABLE_NAME_WIFIMONITOR,projection,null,null,null,null,sortOrder);
+    }
+
+
+    private ArrayList<AssociateSsids> getAssociateSsidses(int wifiMonitorEntryId) {
+        String[] projection = {
+                DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_ID,
+                DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_NAME,
+                DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID
+        };
+        String selection = DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID + " = ?";
+        String [] selectionArgs = { wifiMonitorEntryId+"" };
+        String sortOrder = DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_NAME + " DESC";
+        Cursor cursor = getReadableDatabase().query(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY_SSIDS, projection, selection, selectionArgs, null, null, sortOrder);
+        ArrayList<AssociateSsids> associateSsidses = new ArrayList<>();
+        if (cursor.moveToFirst()){
+            do{
+                AssociateSsids associateSsids = new AssociateSsids();
+                int id = cursor.getInt(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_ID));
+                String ssidName = cursor.getString(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_NAME));
+                int associateSsidId = cursor.getInt(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID));
+                associateSsids.setId(id);
+                associateSsids.setSsidName(ssidName);
+                associateSsids.setWifiMonitorEntryId(associateSsidId);
+                associateSsidses.add(associateSsids);
+
+            }while(cursor.moveToNext());
+        }
+
+        return associateSsidses;
     }
 
 }

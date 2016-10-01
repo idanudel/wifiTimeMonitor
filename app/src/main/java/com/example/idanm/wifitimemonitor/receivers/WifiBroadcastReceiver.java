@@ -8,8 +8,8 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import com.example.idanm.wifitimemonitor.DataObjects.OperationType;
-import com.example.idanm.wifitimemonitor.Utils.WifiStateHistory;
+import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.OperationType;
+import com.example.idanm.wifitimemonitor.utils.WifiStateHistory;
 import com.example.idanm.wifitimemonitor.db.DbHelper;
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
         new DbHelper(context).insertWifiStatus(connectedKeys,ssidName, OperationType.CONNECT);
     }
     private void updateOnDisconnect(Context context , ArrayList<Long> connectedKeys, String ssidName) {
-        new DbHelper(context).insertWifiStatus(connectedKeys,ssidName, OperationType.DICONNECT);
+        new DbHelper(context).insertWifiStatus(connectedKeys,ssidName, OperationType.DISCONNECT);
     }
 
     private ArrayList<Long> checkConnectedToDesiredWifi(String ssid) {
