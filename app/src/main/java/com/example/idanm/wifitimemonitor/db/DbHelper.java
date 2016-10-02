@@ -149,14 +149,19 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    private ArrayList<AssociateSsids> getAssociateSsidses(int wifiMonitorEntryId) {
+    public ArrayList<AssociateSsids> getAssociateSsidses(int wifiMonitorEntryId) {
         String[] projection = {
                 DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_ID,
                 DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_NAME,
                 DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID
         };
-        String selection = DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID + " = ?";
-        String [] selectionArgs = { wifiMonitorEntryId+"" };
+        String selection = null;
+        String[] selectionArgs = null;
+        if(wifiMonitorEntryId>0) {
+            selection = DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID + " = ?";
+            selectionArgs = new String [1];
+            selectionArgs[0] = wifiMonitorEntryId + "";
+        }
         String sortOrder = DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_NAME + " DESC";
         Cursor cursor = getReadableDatabase().query(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY_SSIDS, projection, selection, selectionArgs, null, null, sortOrder);
         ArrayList<AssociateSsids> associateSsidses = new ArrayList<>();

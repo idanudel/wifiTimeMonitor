@@ -90,13 +90,14 @@ public class MainActivity extends AppCompatActivity {
             wifiMonitorEntry.setWifiMonitorEntryId(wifiMonitorEntryEntity.getId());
             wifiMonitorEntry.setEntryName(wifiMonitorEntryEntity.getWifiMonitorEntryName());
             long lastConnectionDay = getLastConnectedDay(wifiMonitorEntryEntity.getWifiMonitorConnectionses());
+
             if(lastConnectionDay!=0) {
-                long lastDisconnectionDay = lastDisconnectionDay(wifiMonitorEntryEntity.getWifiMonitorConnectionses(),lastConnectionDay);
+                long firstConnectionOfDay = firstConnectionDay(wifiMonitorEntryEntity.getWifiMonitorConnectionses(),lastConnectionDay);
                 wifiMonitorEntry.setConnectionDate(lastConnectionDay);
-                if(lastDisconnectionDay==0){
-                    lastDisconnectionDay = lastConnectionDay;
+                if(firstConnectionOfDay==0){
+                    firstConnectionOfDay = lastConnectionDay;
                 }
-                wifiMonitorEntry.setConnectedTime(lastDisconnectionDay - lastConnectionDay);
+                wifiMonitorEntry.setConnectedTime(lastConnectionDay - firstConnectionOfDay);
             }
             wifiMonitorEntries.add(wifiMonitorEntry);
         }
@@ -104,20 +105,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private long lastDisconnectionDay(ArrayList<WifiMonitorConnections> wifiMonitorConnectionses, long lastConnectionDay) {
-        if(wifiMonitorConnectionses==null || wifiMonitorConnectionses.size()<1 || lastConnectionDay==0){
-            return 0;
+    private long firstConnectionDay(ArrayList<WifiMonitorConnections> wifiMonitorConnectionses, long lastConnectionDayTime) {
+        long firstConnectionDay = lastConnectionDayTime;
+        if(wifiMonitorConnectionses==null || wifiMonitorConnectionses.size()<1){
+            return firstConnectionDay;
         }
-        GregorianCalendar lastDisconnectionDay = new GregorianCalendar();
-        lastDisconnectionDay.setTimeInMillis(0);
+        GregorianCalendar lastConnectionDay = new GregorianCalendar();
+        lastConnectionDay.setTimeInMillis(lastConnectionDayTime);
         for(WifiMonitorConnections wifiMonitorConnections:wifiMonitorConnectionses){
-            if(wifiMonitorConnections.getDate().getTime()>lastConnectionDay && OperationType.DISCONNECT.name().equals(wifiMonitorConnections.getOp())){
-                lastDisconnectionDay.setTimeInMillis(wifiMonitorConnections.getDate().getTime());
+            long connectionDate = wifiMonitorConnections.getDate().getTime();
+            GregorianCalendar currentCal = new GregorianCalendar();
+            currentCal.setTimeInMillis(connectionDate);
+            int currentDayofYear = currentCal.get(Calendar.DAY_OF_YEAR);
+            int dayToComapre = lastConnectionDay.get(Calendar.DAY_OF_YEAR);
+            if(currentDayofYear==dayToComapre && connectionDate<firstConnectionDay){
+                firstConnectionDay = connectionDate;
             }
         }
-        return lastDisconnectionDay.getTimeInMillis();
-
-
+        return firstConnectionDay;
     }
 
     private long getLastConnectedDay(ArrayList<WifiMonitorConnections> wifiMonitorConnectionses) {

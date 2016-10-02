@@ -8,6 +8,7 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
+import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.AssociateSsids;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.OperationType;
 import com.example.idanm.wifitimemonitor.utils.WifiStateHistory;
 import com.example.idanm.wifitimemonitor.db.DbHelper;
@@ -31,7 +32,7 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
                     && state == SupplicantState.COMPLETED) {
                 String ssidName = getSsidName(context);
                 WifiStateHistory.recordConnectedSsid(ssidName);
-                ArrayList<Long> connectedKeys = checkConnectedToDesiredWifi(ssidName);
+                ArrayList<Long> connectedKeys = checkConnectedToDesiredWifi(ssidName,context);
                 if(connectedKeys==null || connectedKeys.size()<1){
                     return;
                 }
@@ -57,7 +58,7 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
                 if(manager.isWifiEnabled())
                 {
                     String ssidName =  WifiStateHistory.getLastConnectedSsid();
-                    ArrayList<Long> connectedKeys = checkConnectedToDesiredWifi(ssidName);
+                    ArrayList<Long> connectedKeys = checkConnectedToDesiredWifi(ssidName,context);
                     if(connectedKeys==null || connectedKeys.size()<1){
                         return;
                     }
@@ -84,11 +85,11 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
         new DbHelper(context).insertWifiStatus(connectedKeys,ssidName, OperationType.DISCONNECT);
     }
 
-    private ArrayList<Long> checkConnectedToDesiredWifi(String ssid) {
+    private ArrayList<Long> checkConnectedToDesiredWifi(String ssid,Context context) {
        if (ssid==null) {
             return null;
         }
-        Map<Long,ArrayList<String>> wifiNames = getWifiMap();
+        Map<Long,ArrayList<String>> wifiNames = getWifiMap(context);
         Set<Long> wifiNamesKeys = wifiNames.keySet();
         ArrayList<Long> wifiKeysToReturn = new ArrayList<>();
         for(Long wifiKey :wifiNamesKeys){
@@ -101,14 +102,20 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
         return wifiKeysToReturn;
     }
 
-    private Map<Long, ArrayList<String>> getWifiMap() {
+    private Map<Long, ArrayList<String>> getWifiMap(Context context) {
+
         Map<Long, ArrayList<String>> wifiMap = new HashMap<>();
-        ArrayList<String> wifiSsids = new ArrayList<String>();
-        wifiSsids.add("Mor");
-        wifiSsids.add("\"Mor\"");
-        wifiSsids.add("Mor Test");
-        wifiSsids.add("\"Mor Test\"");
-        wifiMap.put(123L,wifiSsids);
+        ArrayList<AssociateSsids> associateSsids = new DbHelper(context).getAssociateSsidses(-1);
+        if(associateSsids==null || associateSsids.size()<1){
+            return wifiMap;
+        }
+        for(AssociateSsids associateSsid:associateSsids){
+            Long wifiMonitorId = new Long(associateSsid.getWifiMonitorEntryId());
+            if(!wifiMap.containsKey(associateSsid.getWifiMonitorEntryId())){
+                wifiMap.put(wifiMonitorId,new ArrayList<String>());
+            }
+            wifiMap.get(wifiMonitorId).add(associateSsid.getSsidName());
+        }
         return wifiMap;
 
     }
