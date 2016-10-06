@@ -48,7 +48,7 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
 //                updateOnDisconnect(context,connectedKeys,ssidName);
 //            }
         }
-        if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION))
+        if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action))
         {
             WifiManager manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
             NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);

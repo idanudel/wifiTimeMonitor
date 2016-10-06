@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        generateWifiMonitorListView();
+    }
+
+    private void generateWifiMonitorListView() {
         ArrayList<WifiMonitorEntryEntity> wifiMonitorEntryEntity = getWifiMonitorEntryEntity();
         ArrayList<WifiMonitorEntry> wifiMonitorEntry = getWifiMonitorEntries(wifiMonitorEntryEntity);
         wifiMonitorEntryAdapter = new WifiMonitorEntryAdapter(this,
@@ -161,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        if (id == R.id.action_refresh) {
+            generateWifiMonitorListView();
         }
 
         return super.onOptionsItemSelected(item);

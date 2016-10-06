@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_show_wifi_monitor">ShowWifiMonitor</string>
     <string name="title_activity_add_wifi_monitor">Wifi Monitor</string>
+    <string name="refresh">Refresh</string>
 
     <!-- Strings related to Settings -->
 

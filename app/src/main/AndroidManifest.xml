@@ -3,6 +3,9 @@
     package="com.example.idanm.wifitimemonitor">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED">
+
+    </uses-permission>
 
     <application
         android:allowBackup="true"
@@ -28,6 +31,12 @@
             android:name=".activities.EditWifiMonitor"
             android:label="@string/title_activity_edit_wifi_monitor"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <receiver android:name=".receivers.BootBroadcastReceiver" android:enabled="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
