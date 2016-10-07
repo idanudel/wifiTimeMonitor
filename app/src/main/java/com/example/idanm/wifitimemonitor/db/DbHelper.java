@@ -10,12 +10,10 @@ import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.AssociateSsid
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.OperationType;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorConnections;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorEntryEntity;
-import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.WifiMonitorEntry;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by idanm on 9/16/16.
@@ -43,6 +41,10 @@ public class DbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
+    public void  clearAll() {
+        onUpgrade(getWritableDatabase(),0,0);
+    }
+
     public boolean insertWifiStatus(ArrayList<Long> wifiKeys, String ssidName, OperationType operationType){
         if(wifiKeys==null || wifiKeys.size()<1||operationType==null || null == ssidName || ssidName.isEmpty())return false;
 
@@ -54,6 +56,23 @@ public class DbHelper extends SQLiteOpenHelper {
             values.put(DbEntriesParams.COLUMN_SSID_NAME,ssidName);
             getWritableDatabase().insert(DbEntriesParams.TABLE_NAME_WIFIMONITOR,null,values);
         }
+        return true;
+    }
+
+    public boolean updateWifiStatus(WifiMonitorConnections wifiMonitorConnections ){
+        if(wifiMonitorConnections.getSsidName()==null || wifiMonitorConnections.getSsidName().isEmpty())return false;
+
+            ContentValues values = new ContentValues();
+            values.put(DbEntriesParams.COLUMN_NAME_WIFI_MONITOR_ID, wifiMonitorConnections.getWifiMonitorEntryId());
+            values.put(DbEntriesParams.COLUMN_NAME_TIME, Calendar.getInstance().getTimeInMillis());
+            values.put(DbEntriesParams.COLUMN_OPERATION,OperationType.CONNECT.name());
+            values.put(DbEntriesParams.COLUMN_SSID_NAME,wifiMonitorConnections.getSsidName());
+
+            String selection = DbEntriesParams.COLUMN_NAME_ID + " = ? ";
+            String [] selectionArgs = { wifiMonitorConnections.getId()+""};
+            getWritableDatabase().update(DbEntriesParams.TABLE_NAME_WIFIMONITOR,values,selection,selectionArgs);
+
+
         return true;
     }
 
@@ -101,8 +120,15 @@ public class DbHelper extends SQLiteOpenHelper {
         return wifiMonitorEntryEntities;
     }
 
-
+    public ArrayList<WifiMonitorConnections> getWifiTodayMonitorConnectionses(int wifiKey){
+        long from = getStartOfDay(new Date());
+        long to = getEndOfDay(new Date());
+        return getWifiTodayMonitorConnectionses(wifiKey,from,to);
+    }
     public ArrayList<WifiMonitorConnections> getWifiMonitorConnectionses(int wifiKey){
+        return getWifiTodayMonitorConnectionses(wifiKey,0,999999999999999999L);
+    }
+    public ArrayList<WifiMonitorConnections> getWifiTodayMonitorConnectionses(int wifiKey,long from,long to){
         ArrayList<WifiMonitorConnections> wifiMonitorConnectionses = new ArrayList<>();
         String[] projection = {
                 DbEntriesParams.COLUMN_NAME_ID,
@@ -111,8 +137,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 DbEntriesParams.COLUMN_OPERATION,
                 DbEntriesParams.COLUMN_SSID_NAME
         };
-        String selection = DbEntriesParams.COLUMN_NAME_WIFI_MONITOR_ID + " = ?";
-        String [] selectionArgs = { wifiKey +""};
+        String selection = DbEntriesParams.COLUMN_NAME_WIFI_MONITOR_ID + " = ? AND "+  DbEntriesParams.COLUMN_NAME_TIME+" <= ? AND "+  DbEntriesParams.COLUMN_NAME_TIME+" >= ?" ;
+        String [] selectionArgs = { wifiKey +"",to+"",from+""};
         String sortOrder = DbEntriesParams.COLUMN_NAME_TIME + " DESC";
         Cursor cursor = getReadableDatabase().query(DbEntriesParams.TABLE_NAME_WIFIMONITOR, projection, selection, selectionArgs, null, null, sortOrder);
 
@@ -136,6 +162,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return wifiMonitorConnectionses;
     }
+
     public Cursor getWifiMonitor(){
         String[] projection = {
                 DbEntriesParams.COLUMN_NAME_ID,
@@ -180,6 +207,28 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
         return associateSsidses;
+    }
+
+
+
+    public long getStartOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        calendar.set(Calendar.HOUR_OF_DAY, 0); //set hours to zero
+        calendar.set(Calendar.MINUTE, 0); // set minutes to zero
+        calendar.set(Calendar.SECOND, 0); //set seconds to zero
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTimeInMillis();
+    }
+
+    public long getEndOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTimeInMillis();
     }
 
 }

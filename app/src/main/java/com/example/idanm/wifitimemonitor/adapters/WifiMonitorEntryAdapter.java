@@ -75,7 +75,15 @@ public class WifiMonitorEntryAdapter extends ArrayAdapter<WifiMonitorEntry> {
         long hours = wifiMonitorEntry.getConnectedTime() / (60 * 60 * 1000); //since both are ints, you get an int
         long minutes = wifiMonitorEntry.getConnectedTime() / (60 * 1000) % 60;
         if(hours!=0 || minutes!=0) {
-            holder.entryTime.setText(hours + ":" + minutes);
+            String addZeroToHour="";
+            String addZeroToMin="";
+            if(hours<10){
+                addZeroToHour = "0";
+            }
+            if(minutes<10){
+                addZeroToMin = "0";
+            }
+            holder.entryTime.setText(addZeroToHour+hours + ":" + addZeroToMin+minutes);
         }
         else{
             holder.entryTime.setText("--:--");

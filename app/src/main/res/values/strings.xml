@@ -4,6 +4,7 @@
     <string name="title_activity_show_wifi_monitor">ShowWifiMonitor</string>
     <string name="title_activity_add_wifi_monitor">Wifi Monitor</string>
     <string name="refresh">Refresh</string>
+    <string name="clear_all">Clear</string>
 
     <!-- Strings related to Settings -->
 

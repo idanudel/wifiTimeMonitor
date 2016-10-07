@@ -1,5 +1,6 @@
 package com.example.idanm.wifitimemonitor;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(view.getContext(), EditWifiMonitor.class);
                 long wifiKey = 111L;
                 intent.putExtra("wifiKey", wifiKey);
-                startActivity(intent);
+                startActivityForResult(intent,3);
             }
         });
 
@@ -169,12 +170,33 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_refresh) {
             generateWifiMonitorListView();
         }
+        if (id == R.id.action_clear_all) {
+            clearAllEntryies();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void clearAllEntryies() {
+        DbHelper dbHelper = new DbHelper(this);
+        dbHelper.clearAll();
+        generateWifiMonitorListView();
     }
 
     public ArrayList<WifiMonitorEntryEntity> getWifiMonitorEntryEntity() {
         DbHelper dbHelper = new DbHelper(this);
         return dbHelper.getWifiAllMonitorEntries();
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(resultCode) {
+            case (Activity.RESULT_OK) : {
+                    generateWifiMonitorListView();
+             break;
+            }
+        }
     }
 }
