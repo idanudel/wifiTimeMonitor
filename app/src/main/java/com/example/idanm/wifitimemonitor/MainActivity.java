@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.idanm.wifitimemonitor.activities.EditWifiMonitor;
+import com.example.idanm.wifitimemonitor.activities.ShowWifiMonitor;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.OperationType;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorConnections;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorEntryEntity;
@@ -54,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), EditWifiMonitor.class);
-                long wifiKey = 111L;
-                intent.putExtra("wifiKey", wifiKey);
                 startActivityForResult(intent,3);
             }
         });
@@ -81,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         "Clicked on Row: " + wifiMonitorEntry.getEntryName() + " "+wifiMonitorEntry.getWifiMonitorEntryId(),
                         Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(view.getContext(), ShowWifiMonitor.class);
+                int wifiKey = wifiMonitorEntry.getWifiMonitorEntryId();
+                intent.putExtra("wifiKey", wifiKey);
+                startActivity(intent);
             }
         });
     }

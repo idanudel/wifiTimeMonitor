@@ -1,6 +1,8 @@
 package com.example.idanm.wifitimemonitor.activities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.idanm.wifitimemonitor.MainActivity;
 import com.example.idanm.wifitimemonitor.adapters.EditWifiMonitorAdapter;
 import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.SsidName;
 import com.example.idanm.wifitimemonitor.R;
@@ -74,30 +77,45 @@ public class EditWifiMonitor extends AppCompatActivity {
                 if(selectedWifiTrackerName.getText()==null || selectedWifiTrackerName.getText().toString().isEmpty()){
                     Toast.makeText(getApplicationContext().getApplicationContext(),
                             "Select Name First", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
+
+                ArrayList<SsidName> availableSsidNames = editWifiMonitorAdapter.ssidList;
                 StringBuffer responseText = new StringBuffer();
                 responseText.append("The following were selected...\n");
 
-                ArrayList<SsidName> StringList = editWifiMonitorAdapter.ssidList;
+
                 ArrayList<String> ssidNames = new ArrayList<String>();
-                for(int i=0;i<StringList.size();i++){
-                    SsidName ssidName = StringList.get(i);
+                for(int i=0;i<availableSsidNames.size();i++){
+                    SsidName ssidName = availableSsidNames.get(i);
                     if(ssidName.isSelected()){
                         responseText.append("\n" + ssidName.getSsidName());
                         ssidNames.add(ssidName.getSsidName());
                     }
                 }
 
-                Toast.makeText(getApplicationContext().getApplicationContext(),
-                        responseText, Toast.LENGTH_LONG).show();
+                if(ssidNames==null || ssidNames.isEmpty()){
+                    Toast.makeText(getApplicationContext().getApplicationContext(),
+                            "Select at least one SSID name", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 DbHelper dbHelper = new DbHelper(getApplicationContext());
                 String wifiMonitorEntryName = selectedWifiTrackerName.getText().toString();
                 dbHelper.insertWifiTimeMonitorSetting(wifiMonitorEntryName,ssidNames);
+
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                // TODO Add extras or a data URI to this intent as appropriate.
+                setResult(Activity.RESULT_OK, intent);
+                finish();
+
 
             }
         });
 
     }
+
+
 
 }
