@@ -62,7 +62,7 @@ public class WifiMonitorEntryAdapter extends ArrayAdapter<WifiMonitorEntry> {
         holder.entryName.setTag(wifiMonitorEntry.getWifiMonitorEntryId());
 
         if(wifiMonitorEntry.getConnectionDate()!=0){
-            String formatString = "dd.MM.yy";
+            String formatString = "dd/MM/yy";
             SimpleDateFormat format = new SimpleDateFormat(formatString);
             String date = format.format(new Date(wifiMonitorEntry.getConnectionDate()));
             holder.entryDate.setText(date);

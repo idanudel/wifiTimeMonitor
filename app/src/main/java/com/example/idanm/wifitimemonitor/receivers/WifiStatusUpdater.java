@@ -92,7 +92,7 @@ public class WifiStatusUpdater
     }
     public boolean isAlarmUp(){
         return (PendingIntent.getBroadcast(context, 0,
-                new Intent(BootBroadcastReceiver.class.toString()),
+                new Intent(context, BootBroadcastReceiver.class),
                 PendingIntent.FLAG_NO_CREATE) != null);
     }
 }

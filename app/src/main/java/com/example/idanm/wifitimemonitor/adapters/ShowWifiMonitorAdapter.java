@@ -27,7 +27,7 @@ public class ShowWifiMonitorAdapter extends ArrayAdapter<ShowWifiMonitor.WifiSta
     }
 
     private class ViewHolder {
-        TextView ssidName;
+        //TextView ssidName;
         TextView connectionDate;
         TextView connectionTotalTime;
         TextView connectionFromTime;
@@ -46,7 +46,7 @@ public class ShowWifiMonitorAdapter extends ArrayAdapter<ShowWifiMonitor.WifiSta
             convertView = vi.inflate(R.layout.show_wifi_monitor, null);
 
             holder = new ViewHolder();
-            holder.ssidName = (TextView) convertView.findViewById(R.id.showWifiMonitorSsidName);
+            //holder.ssidName = (TextView) convertView.findViewById(R.id.showWifiMonitorSsidName);
             holder.connectionDate = (TextView) convertView.findViewById(R.id.showWifiMonitorConnectionDate);
             holder.connectionTotalTime = (TextView) convertView.findViewById(R.id.showWifiMonitorConnectionTotalTime);
             holder.connectionFromTime = (TextView) convertView.findViewById(R.id.showWifiMonitorConnectionFromTime);
@@ -57,7 +57,7 @@ public class ShowWifiMonitorAdapter extends ArrayAdapter<ShowWifiMonitor.WifiSta
             holder = (ViewHolder) convertView.getTag();
         }
         ShowWifiMonitor.WifiStatusHistory wifiStatusHistoryPosition = wifiStatusHistory.get(position);
-        holder.ssidName.setText(wifiStatusHistoryPosition.getSsidName());
+        //holder.ssidName.setText(wifiStatusHistoryPosition.getSsidName());
         holder.connectionDate.setText(wifiStatusHistoryPosition.getConnectionDate());
         holder.connectionTotalTime.setText(wifiStatusHistoryPosition.getConnectionTotalTime());
         holder.connectionFromTime.setText(wifiStatusHistoryPosition.getConnectionFromTime());

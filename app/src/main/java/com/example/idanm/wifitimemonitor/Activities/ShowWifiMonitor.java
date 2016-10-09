@@ -64,7 +64,7 @@ public class ShowWifiMonitor extends AppCompatActivity {
             long startOfDay = new DbHelper(getApplicationContext()).getStartOfDay(wifiMonitorConnection.getDate());
             if(!stringWifiStatusHistoryHashMap.containsKey(startOfDay)){
                 WifiStatusHistory wifiStatusHistory = new WifiStatusHistory();
-                String formatString = "dd.MM.yy";
+                String formatString = "dd/MM/yy";
                 SimpleDateFormat format = new SimpleDateFormat(formatString);
                 wifiStatusHistory.setConnectionDate(format.format(wifiMonitorConnection.getDate()));
                 wifiStatusHistory.setConnectionFromTime(getHourAndMin(wifiMonitorConnection.getDate().getTime()));
@@ -107,13 +107,31 @@ public class ShowWifiMonitor extends AppCompatActivity {
     private String getHourAndMin(Long time) {
         Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
         calendar.setTimeInMillis(time);
-        return calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE);
+
+        int min = calendar.get(Calendar.MINUTE);
+        String hourString = calendar.get(Calendar.HOUR_OF_DAY)+"";
+        String minString = calendar.get(Calendar.MINUTE)+"";
+        if(calendar.get(Calendar.HOUR_OF_DAY)<10){
+            hourString = "0"+hourString;
+        }
+        if(calendar.get(Calendar.MINUTE)<10){
+            minString = "0"+minString;
+        }
+        return hourString+":"+minString;
     }
 
     private String getTimeStringFormat(Long time) {
         long hours = time / (60 * 60 * 1000); //since both are ints, you get an int
         long minutes = time / (60 * 1000) % 60;
-        return hours+":"+minutes;
+        String hour = hours+"";
+        String min = minutes+"";
+        if(hours<10){
+            hour = "0"+hour;
+        }
+        if(minutes<10){
+            min = "0"+min;
+        }
+        return hour+":"+min;
     }
 
 

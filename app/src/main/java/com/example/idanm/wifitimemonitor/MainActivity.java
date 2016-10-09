@@ -26,6 +26,7 @@ import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.WifiMonitorEntr
 import com.example.idanm.wifitimemonitor.adapters.WifiMonitorEntryAdapter;
 import com.example.idanm.wifitimemonitor.db.DbHelper;
 import com.example.idanm.wifitimemonitor.receivers.WifiBroadcastReceiver;
+import com.example.idanm.wifitimemonitor.receivers.WifiStatusUpdater;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,11 +44,14 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        BroadcastReceiver broadcastReceiver = new WifiBroadcastReceiver();
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
-        registerReceiver(broadcastReceiver, intentFilter);
+//        BroadcastReceiver broadcastReceiver = new WifiBroadcastReceiver();
+//
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+//        registerReceiver(broadcastReceiver, intentFilter);
+        Toast.makeText(getApplicationContext(),
+                "isWorking: "+new WifiStatusUpdater(getApplicationContext()).isAlarmUp(),
+                Toast.LENGTH_LONG).show();
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
