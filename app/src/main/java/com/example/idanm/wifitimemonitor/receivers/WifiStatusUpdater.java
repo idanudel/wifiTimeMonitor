@@ -39,6 +39,7 @@ public class WifiStatusUpdater
     }
 
     private void updateWifiStatus() {
+        boolean isNeedToUpdate = false;
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = wifiManager.getConnectionInfo ();
         String ssid  = info.getSSID();
@@ -67,6 +68,7 @@ public class WifiStatusUpdater
                 ArrayList<Long> wifiMonitorIds = new ArrayList<>();
                 wifiMonitorIds.add(wifiMonitorEntryEntityId.longValue());
                 dbHelper.insertWifiStatus(wifiMonitorIds,ssid, OperationType.CONNECT);
+                isNeedToUpdate = true;
                 return;
             }
             WifiMonitorConnections wifiMonitorConnectionToUpdate =null;
@@ -76,8 +78,12 @@ public class WifiStatusUpdater
                 }
             }
             dbHelper.updateWifiStatus(wifiMonitorConnectionToUpdate);
+            isNeedToUpdate = true;
+        }
 
-
+        if(isNeedToUpdate) {
+            Intent intent = new Intent(CONST.UPDATE_UI_ACTION);
+            context.sendBroadcast(intent);
         }
 
 

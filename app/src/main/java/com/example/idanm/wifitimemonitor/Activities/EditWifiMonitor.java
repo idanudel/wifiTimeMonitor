@@ -1,10 +1,16 @@
 package com.example.idanm.wifitimemonitor.activities;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +28,10 @@ import com.example.idanm.wifitimemonitor.R;
 import com.example.idanm.wifitimemonitor.db.DbHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class EditWifiMonitor extends AppCompatActivity {
     EditWifiMonitorAdapter editWifiMonitorAdapter = null;
@@ -33,22 +43,23 @@ public class EditWifiMonitor extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        WifiManager wifiManager =
+        final WifiManager wifiManager =
                 (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
 
         if(wifiManager.getConfiguredNetworks()==null){
             //todo print current message on screen
             return;
         }
-        ArrayList<SsidName> ssidList = new ArrayList<SsidName>();
+        final Set<SsidName> ssidList = new HashSet<>();
         for(WifiConfiguration wifiConfiguration:wifiManager.getConfiguredNetworks()){
             SsidName ssidName = new SsidName(wifiConfiguration.SSID,false);
             ssidList.add(ssidName);
 
         }
+
         //create an ArrayAdaptar from the String Array
         editWifiMonitorAdapter = new EditWifiMonitorAdapter(this,
-                R.layout.content_edit_wifi_monitor, ssidList);
+                R.layout.content_edit_wifi_monitor, new ArrayList<SsidName>(ssidList));
         ListView listView = (ListView) findViewById(R.id.listView1);
         // Assign adapter to ListView
         listView.setAdapter(editWifiMonitorAdapter);
@@ -57,7 +68,7 @@ public class EditWifiMonitor extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                // When clicked, show a toast with the TextView text
+
                 SsidName ssidName = (SsidName) parent.getItemAtPosition(position);
                 Toast.makeText(getApplicationContext(),
                         "Clicked on Row: " + ssidName.getSsidName(),

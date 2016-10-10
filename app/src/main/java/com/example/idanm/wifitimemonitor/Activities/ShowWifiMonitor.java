@@ -1,6 +1,9 @@
 package com.example.idanm.wifitimemonitor.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,12 +26,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class ShowWifiMonitor extends AppCompatActivity {
     ShowWifiMonitorAdapter showWifiMonitorAdapter =null;
+    Integer wifiKey =null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,15 +48,25 @@ public class ShowWifiMonitor extends AppCompatActivity {
             finish();
             return;
         }
-        Integer wifiKey = (Integer)bd.get("wifiKey");
+        wifiKey = (Integer)bd.get("wifiKey");
+        generateWifiMonitorListView();
+        this.registerReceiver(mMessageReceiver, new IntentFilter(CONST.UPDATE_UI_ACTION));
+
+    }
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            generateWifiMonitorListView();
+        }
+    };
+    private void generateWifiMonitorListView(){
         ArrayList<WifiMonitorConnections> wifiMonitorConnections= new DbHelper(this).getWifiMonitorConnectionses(wifiKey.intValue());
 
-
-        showWifiMonitorAdapter = new ShowWifiMonitorAdapter(this,
-                R.layout.content_edit_wifi_monitor, organizeWifiMonitorConnections(wifiMonitorConnections));
+        ArrayList<WifiStatusHistory> wifiStatusHistorys = organizeWifiMonitorConnections(wifiMonitorConnections);
+        Collections.sort(wifiStatusHistorys);
+        showWifiMonitorAdapter = new ShowWifiMonitorAdapter(this,R.layout.content_edit_wifi_monitor, wifiStatusHistorys);
         ListView listView = (ListView) findViewById(R.id.showWifiMonitorListView);
         listView.setAdapter(showWifiMonitorAdapter);
-
     }
 
     private ArrayList<WifiStatusHistory> organizeWifiMonitorConnections(ArrayList<WifiMonitorConnections> wifiMonitorConnections) {
@@ -135,7 +150,7 @@ public class ShowWifiMonitor extends AppCompatActivity {
     }
 
 
-    public class WifiStatusHistory {
+    public class WifiStatusHistory implements Comparable {
         String ssidName;
         String connectionDate;
         String connectionTotalTime;
@@ -199,6 +214,18 @@ public class ShowWifiMonitor extends AppCompatActivity {
 
         public void setConnectionToTimeLong(Long connectionToTimeLong) {
             this.connectionToTimeLong = connectionToTimeLong;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            WifiStatusHistory wifiStatusHistoryToCompare = (WifiStatusHistory)o;
+            if(wifiStatusHistoryToCompare.getConnectionFromTimeLong() < this.getConnectionFromTimeLong()){
+                return -1;
+            }
+            if(wifiStatusHistoryToCompare.getConnectionFromTimeLong() > this.getConnectionFromTimeLong()){
+                return -1;
+            }
+            return 0;
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.idanm.wifitimemonitor;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
@@ -27,6 +28,7 @@ import com.example.idanm.wifitimemonitor.adapters.WifiMonitorEntryAdapter;
 import com.example.idanm.wifitimemonitor.db.DbHelper;
 import com.example.idanm.wifitimemonitor.receivers.WifiBroadcastReceiver;
 import com.example.idanm.wifitimemonitor.receivers.WifiStatusUpdater;
+import com.example.idanm.wifitimemonitor.utils.CONST;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,7 +66,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         generateWifiMonitorListView();
+        this.registerReceiver(mMessageReceiver, new IntentFilter(CONST.UPDATE_UI_ACTION));
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            generateWifiMonitorListView();
+        }
+    };
 
     private void generateWifiMonitorListView() {
         ArrayList<WifiMonitorEntryEntity> wifiMonitorEntryEntity = getWifiMonitorEntryEntity();
