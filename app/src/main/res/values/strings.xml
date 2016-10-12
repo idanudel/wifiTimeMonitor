@@ -64,4 +64,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_edit_wifi_monitor">EditWifiMonitor</string>
+    <string name="title_activity_test">test</string>
 </resources>

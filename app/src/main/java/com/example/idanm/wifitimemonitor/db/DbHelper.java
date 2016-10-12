@@ -44,6 +44,13 @@ public class DbHelper extends SQLiteOpenHelper {
     public void  clearAll() {
         onUpgrade(getWritableDatabase(),0,0);
     }
+    public boolean deleteWifiEntry(int wifiEnteryKey) {
+        getWritableDatabase().delete(DbEntriesParams.TABLE_NAME_WIFIMONITOR, DbEntriesParams.COLUMN_NAME_WIFI_MONITOR_ID+"=?", new String[]{Integer.toString(wifiEnteryKey)});
+        getWritableDatabase().delete(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY_SSIDS, DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID+"=?", new String[]{Integer.toString(wifiEnteryKey)});
+        getWritableDatabase().delete(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY, DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_ID+"=?", new String[]{Integer.toString(wifiEnteryKey)});
+        return true;
+
+    }
 
     public boolean insertWifiStatus(ArrayList<Long> wifiKeys, String ssidName, OperationType operationType){
         if(wifiKeys==null || wifiKeys.size()<1||operationType==null || null == ssidName || ssidName.isEmpty())return false;

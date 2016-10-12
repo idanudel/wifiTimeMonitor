@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,9 +53,9 @@ public class MainActivity extends AppCompatActivity {
 //        IntentFilter intentFilter = new IntentFilter();
 //        intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
 //        registerReceiver(broadcastReceiver, intentFilter);
-        Toast.makeText(getApplicationContext(),
-                "isWorking: "+new WifiStatusUpdater(getApplicationContext()).isAlarmUp(),
-                Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(),
+//                "isWorking: "+new WifiStatusUpdater(getApplicationContext()).isAlarmUp(),
+//                Toast.LENGTH_LONG).show();
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -101,6 +103,28 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        registerForContextMenu(listView);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.getId()==R.id.wifiMonitorEntries) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.context_menu_main_show_wifi_monitor, menu);
+        }
+    }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch(item.getItemId()) {
+            case R.id.menu_main_show_wifi_monitor_action_delete:
+                DbHelper dbHelper = new DbHelper(getApplicationContext());
+                dbHelper.deleteWifiEntry(wifiMonitorEntryAdapter.wifiMonitorEntries.get(info.position).getWifiMonitorEntryId());
+                generateWifiMonitorListView();
+        }
+        return true;
     }
 
     private ArrayList<WifiMonitorEntry> getWifiMonitorEntries(ArrayList<WifiMonitorEntryEntity> wifiMonitorEntryEntities) {
