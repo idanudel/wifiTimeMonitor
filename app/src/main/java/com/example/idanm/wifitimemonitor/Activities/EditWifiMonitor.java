@@ -106,6 +106,35 @@ public class EditWifiMonitor extends AppCompatActivity {
         // Assign adapter to ListView
         listView.setAdapter(editWifiMonitorAdapter);
 
+        //add scan ssid names
+        if (wifiManager.isWifiEnabled() == true){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.ACCESS_COARSE_LOCATION},1001);
+            }
+            //wifiManager.setWifiEnabled(true);
+            registerReceiver(new BroadcastReceiver()
+            {
+                @Override
+                public void onReceive(Context c, Intent intent)
+                {
+                    List<ScanResult> scanResults = wifiManager.getScanResults();
+                    if(scanResults==null || scanResults.size()<1)return;
+                    for(ScanResult scanResult:scanResults){
+                        SsidName ssidNameScan = new SsidName(scanResult.SSID,false);
+                        if(!editWifiMonitorAdapter.ssidList.contains(ssidNameScan)) {
+                            editWifiMonitorAdapter.ssidList.add(ssidNameScan);
+                        }
+                    }
+                    editWifiMonitorAdapter.notifyDataSetChanged();
+
+
+                }
+            }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        }
+        wifiManager.startScan();
+
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -118,6 +147,12 @@ public class EditWifiMonitor extends AppCompatActivity {
             }
         });
         checkButtonClick();
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
 
     }
     private void checkButtonClick() {

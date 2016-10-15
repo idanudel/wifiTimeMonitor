@@ -27,4 +27,18 @@ public class SsidName {
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean sameSame = false;
+
+        if (obj != null && obj instanceof SsidName)
+        {
+            String withNoQM = ((SsidName) obj).getSsidName().replace("\"", "");
+            sameSame = this.ssidName.replace("\"", "").equals(withNoQM);
+        }
+
+        return sameSame;
+
+    }
 }

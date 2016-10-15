@@ -33,6 +33,10 @@ public class EditWifiMonitorAdapter extends ArrayAdapter<SsidName> {
         TextView ssidName;
         CheckBox name;
     }
+    @Override
+    public int getCount() {
+        return ssidList.size();
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
