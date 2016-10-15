@@ -55,7 +55,7 @@ public class WifiStatusUpdater
             if(associateSsids==null || associateSsids.isEmpty())continue;
             for(AssociateSsids associateSsid:associateSsids){
                 if(associateSsid==null)continue;
-                if(associateSsid.getSsidName().equals(ssid)){
+                if(isEqualsSsid(associateSsid.getSsidName(),ssid)){
                     wifiMonitorEntryEntityIds.add(wifiMonitorEntryEntity.getId());
                 }
             }
@@ -68,7 +68,6 @@ public class WifiStatusUpdater
                 ArrayList<Long> wifiMonitorIds = new ArrayList<>();
                 wifiMonitorIds.add(wifiMonitorEntryEntityId.longValue());
                 dbHelper.insertWifiStatus(wifiMonitorIds,ssid, OperationType.CONNECT);
-                isNeedToUpdate = true;
                 return;
             }
             WifiMonitorConnections wifiMonitorConnectionToUpdate =null;
@@ -87,6 +86,16 @@ public class WifiStatusUpdater
         }
 
 
+    }
+
+    private boolean isEqualsSsid(String ssidName, String ssid) {
+        if(ssidName ==null){
+            return false;
+        }
+        if(ssid == null ){
+            return false;
+        }
+        return ssid.replace("\"","").equals(ssidName.replace("\"",""));
     }
 
     public void setNextAlarm(){

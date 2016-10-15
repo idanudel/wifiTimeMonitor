@@ -10,7 +10,7 @@ import android.net.wifi.WifiManager;
 
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.AssociateSsids;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.OperationType;
-import com.example.idanm.wifitimemonitor.utils.WifiStateHistory;
+
 import com.example.idanm.wifitimemonitor.db.DbHelper;
 
 import java.util.ArrayList;
@@ -72,53 +72,5 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
 //        }
    }
 
-    private String getSsidName(Context context) {
-        WifiManager wifiManager =
-                (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifi = wifiManager.getConnectionInfo();
-        if(wifi==null) return null;
-        return wifi.getSSID();
-    }
 
-    private void updateOnConnect(Context context , ArrayList<Long> connectedKeys, String ssidName) {
-        new DbHelper(context).insertWifiStatus(connectedKeys,ssidName, OperationType.CONNECT);
-    }
-    private void updateOnDisconnect(Context context , ArrayList<Long> connectedKeys, String ssidName) {
-        new DbHelper(context).insertWifiStatus(connectedKeys,ssidName, OperationType.DISCONNECT);
-    }
-
-    private ArrayList<Long> checkConnectedToDesiredWifi(String ssid,Context context) {
-       if (ssid==null) {
-            return null;
-        }
-        Map<Long,ArrayList<String>> wifiNames = getWifiMap(context);
-        Set<Long> wifiNamesKeys = wifiNames.keySet();
-        ArrayList<Long> wifiKeysToReturn = new ArrayList<>();
-        for(Long wifiKey :wifiNamesKeys){
-            ArrayList<String> ssidNames = wifiNames.get(wifiKey);
-            for(String name:ssidNames){
-                if(ssid.equals(name))wifiKeysToReturn.add(wifiKey);
-            }
-        }
-
-        return wifiKeysToReturn;
-    }
-
-    private Map<Long, ArrayList<String>> getWifiMap(Context context) {
-
-        Map<Long, ArrayList<String>> wifiMap = new HashMap<>();
-        ArrayList<AssociateSsids> associateSsids = new DbHelper(context).getAssociateSsidses(-1);
-        if(associateSsids==null || associateSsids.size()<1){
-            return wifiMap;
-        }
-        for(AssociateSsids associateSsid:associateSsids){
-            Long wifiMonitorId = new Long(associateSsid.getWifiMonitorEntryId());
-            if(!wifiMap.containsKey(associateSsid.getWifiMonitorEntryId())){
-                wifiMap.put(wifiMonitorId,new ArrayList<String>());
-            }
-            wifiMap.get(wifiMonitorId).add(associateSsid.getSsidName());
-        }
-        return wifiMap;
-
-    }
 }

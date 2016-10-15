@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -12,11 +13,18 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +50,40 @@ public class EditWifiMonitor extends AppCompatActivity {
         setContentView(R.layout.activity_edit_wifi_monitor);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addManualSsid);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EditWifiMonitor.this);
+                alertDialogBuilder.setTitle("Add SSID name");
+
+                final EditText et = new EditText(EditWifiMonitor.this);
+
+                // set prompts.xml to alertdialog builder
+                alertDialogBuilder.setView(et);
+
+                // set dialog message
+                alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Editable ssidNameText = et.getText();
+                        if(ssidNameText!=null && !ssidNameText.toString().isEmpty()){
+                            SsidName ssidName = new SsidName(ssidNameText.toString(),true);
+                            editWifiMonitorAdapter.ssidList.add(0,ssidName);
+                            editWifiMonitorAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                // show it
+                alertDialog.show();
+
+
+            }});
+
 
         final WifiManager wifiManager =
                 (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
