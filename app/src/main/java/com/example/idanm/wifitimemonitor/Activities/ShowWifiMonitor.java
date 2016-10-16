@@ -1,5 +1,6 @@
 package com.example.idanm.wifitimemonitor.activities;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -74,9 +75,25 @@ public class ShowWifiMonitor extends AppCompatActivity {
         if (id == R.id.action_refresh_wifiRefresh) {
             generateWifiMonitorListView();
         }
+        if (id == R.id.action_edit_wifiRefresh) {
+            Intent intent = new Intent(getApplicationContext(), EditWifiMonitor.class);
+            intent.putExtra("wifiKey", wifiKey);
+            startActivity(intent);
+
+        }
 
 
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(resultCode) {
+            case (Activity.RESULT_OK) : {
+                generateWifiMonitorListView();
+                break;
+            }
+        }
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {

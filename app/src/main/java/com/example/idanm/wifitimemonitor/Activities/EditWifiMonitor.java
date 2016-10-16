@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -16,11 +15,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -31,18 +27,20 @@ import android.widget.Toast;
 
 import com.example.idanm.wifitimemonitor.MainActivity;
 import com.example.idanm.wifitimemonitor.adapters.EditWifiMonitorAdapter;
+import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.AssociateSsids;
+import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorEntryEntity;
 import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.SsidName;
 import com.example.idanm.wifitimemonitor.R;
 import com.example.idanm.wifitimemonitor.db.DbHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class EditWifiMonitor extends AppCompatActivity {
     EditWifiMonitorAdapter editWifiMonitorAdapter = null;
+    Integer wifiMonitorEntreyKey = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +91,32 @@ public class EditWifiMonitor extends AppCompatActivity {
             return;
         }
         final Set<SsidName> ssidList = new HashSet<>();
+
+        Intent intent = getIntent();
+        Bundle bd = intent.getExtras();
+        if(bd != null && bd.get("wifiKey")!=null && (bd.get("wifiKey") instanceof Integer)){
+            wifiMonitorEntreyKey = (Integer) bd.get("wifiKey");
+            DbHelper dbHelper = new DbHelper(getApplicationContext());
+            WifiMonitorEntryEntity wifiMonitorEntryEntity = dbHelper.getWifiMonitorEntries(wifiMonitorEntreyKey);
+            if(wifiMonitorEntryEntity!=null){
+                TextView selectedWifiTrackerName = (TextView) findViewById(R.id.selectWifiTrackerName);
+                selectedWifiTrackerName.setText(wifiMonitorEntryEntity.getWifiMonitorEntryName());
+                ArrayList<AssociateSsids>  associateSsids = wifiMonitorEntryEntity.getAssociateSsidses();
+                if(associateSsids!=null && associateSsids.size()>0){
+                    for(AssociateSsids associateSsid:associateSsids){
+                        SsidName ssidName = new SsidName(associateSsid.getSsidName(),true);
+                        ssidList.add(ssidName);
+                    }
+                }
+
+            }
+        }
+
         for(WifiConfiguration wifiConfiguration:wifiManager.getConfiguredNetworks()){
             SsidName ssidName = new SsidName(wifiConfiguration.SSID,false);
             ssidList.add(ssidName);
-
         }
+
 
         //create an ArrayAdaptar from the String Array
         editWifiMonitorAdapter = new EditWifiMonitorAdapter(this,
@@ -191,9 +210,15 @@ public class EditWifiMonitor extends AppCompatActivity {
 
                 DbHelper dbHelper = new DbHelper(getApplicationContext());
                 String wifiMonitorEntryName = selectedWifiTrackerName.getText().toString();
-                dbHelper.insertWifiTimeMonitorSetting(wifiMonitorEntryName,ssidNames);
+                Intent intent;
+                if(wifiMonitorEntreyKey==null) {
+                    dbHelper.insertWifiTimeMonitorSetting(wifiMonitorEntryName, ssidNames);
+                     intent = new Intent(getApplicationContext(), MainActivity.class);
+                }else {
+                    dbHelper.updateWifiTimeMonitorSetting(wifiMonitorEntryName, wifiMonitorEntreyKey, ssidNames);
+                     intent = new Intent(getApplicationContext(), ShowWifiMonitor.class);
+                }
 
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 // TODO Add extras or a data URI to this intent as appropriate.
                 setResult(Activity.RESULT_OK, intent);
                 finish();

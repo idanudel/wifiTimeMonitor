@@ -98,6 +98,24 @@ public class DbHelper extends SQLiteOpenHelper {
         };
         return true;
     }
+    public boolean updateWifiTimeMonitorSetting(String wifiTimeMonitorName,long wifiMonitorEntryId,ArrayList<String> ssidNames){
+        if(ssidNames==null || ssidNames.size()<1||wifiTimeMonitorName==null || wifiTimeMonitorName.isEmpty())return false;
+
+        String selection = DbEntriesParams.COLUMN_NAME_ID + " = ? ";
+        String [] selectionArgs = { wifiMonitorEntryId+""};
+        ContentValues wifiMonitorEntry = new ContentValues();
+        wifiMonitorEntry.put(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_NAME, wifiTimeMonitorName);
+        getWritableDatabase().update(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY,wifiMonitorEntry,selection,selectionArgs);
+        getWritableDatabase().delete(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY_SSIDS, DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID + "=" + wifiMonitorEntryId, null);
+
+        for(String ssidName:ssidNames){
+            ContentValues values = new ContentValues();
+            values.put(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_SSIDS_NAME, ssidName);
+            values.put(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_WIFIMONITOR_ID, wifiMonitorEntryId);
+            getWritableDatabase().insert(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY_SSIDS,null,values);
+        };
+        return true;
+    }
 
     public ArrayList<WifiMonitorEntryEntity> getWifiAllMonitorEntries(){
         ArrayList<WifiMonitorEntryEntity> wifiMonitorEntryEntities = new ArrayList<>();
@@ -126,6 +144,40 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return wifiMonitorEntryEntities;
     }
+
+    public WifiMonitorEntryEntity getWifiMonitorEntries(Integer wifiMonitorEntryKey){
+        ArrayList<WifiMonitorEntryEntity> wifiMonitorEntryEntities = new ArrayList<>();
+        String[] projection = {
+                DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_ID,
+                DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_NAME
+        };
+        String sortOrder = DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_ID + " ASC";
+
+        String selection = DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_ID + " = ? " ;
+        String [] selectionArgs = { wifiMonitorEntryKey+""};
+
+        Cursor cursor = getReadableDatabase().query(DbEntriesParams.TABLE_NAME_WIFIMONITOR_ENTRY, projection, selection, selectionArgs, null, null, sortOrder);
+
+        if (cursor.moveToFirst()){
+            do{
+                WifiMonitorEntryEntity wifiMonitorEntryEntity = new WifiMonitorEntryEntity();
+                int id = cursor.getInt(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_ID));
+                String wifiMonitorName = cursor.getString(cursor.getColumnIndex(DbEntriesParams.COLUMN_NAME_WIFIMONITOR_ENTRY_NAME));
+                wifiMonitorEntryEntity.setId(id);
+                wifiMonitorEntryEntity.setWifiMonitorEntryName(wifiMonitorName);
+                wifiMonitorEntryEntity.setAssociateSsidses(getAssociateSsidses(id));
+                wifiMonitorEntryEntity.setWifiMonitorConnectionses(getWifiMonitorConnectionses(id));
+                wifiMonitorEntryEntities.add(wifiMonitorEntryEntity);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+
+        if(wifiMonitorEntryEntities!=null && wifiMonitorEntryEntities.size()>0) {
+            return wifiMonitorEntryEntities.get(0);
+        }
+        return null;
+    }
+
 
     public ArrayList<WifiMonitorConnections> getWifiTodayMonitorConnectionses(int wifiKey){
         long from = getStartOfDay(new Date());
