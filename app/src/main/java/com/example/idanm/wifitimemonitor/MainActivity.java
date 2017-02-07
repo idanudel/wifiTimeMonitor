@@ -173,8 +173,12 @@ public class MainActivity extends AppCompatActivity {
             GregorianCalendar currentCal = new GregorianCalendar();
             currentCal.setTimeInMillis(connectionDate);
             int lastConnectionDayOfYear = lastConnectionDay.get(Calendar.DAY_OF_YEAR);
+            int lastYear = lastConnectionDay.get(Calendar.DAY_OF_YEAR);
             int currentDayofYear = currentCal.get(Calendar.DAY_OF_YEAR);
-            if(currentDayofYear>lastConnectionDayOfYear && OperationType.CONNECT.name().equals(wifiMonitorConnections.getOp())){
+            int currentYear = currentCal.get(Calendar.YEAR);
+            if(//((currentDayofYear>lastConnectionDayOfYear && currentYear==lastYear) || (currentYear>lastYear))
+                    currentCal.getTimeInMillis()>lastConnectionDay.getTimeInMillis()
+                    && OperationType.CONNECT.name().equals(wifiMonitorConnections.getOp())){
                 lastConnectionDay.setTimeInMillis(connectionDate);
             }
         }
