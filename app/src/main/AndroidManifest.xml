@@ -47,9 +47,10 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".receivers.WifiBroadcastReceiver"
-            android:enabled="true" />
-        <!-- <receiver  android:process=":remote" android:name=".receivers.WifiStatusUpdater"></receiver> -->
+            android:name="com.example.idanm.wifitimemonitor.receivers.UpdateWifiStatusReceiver"
+            android:exported="false">
+        </receiver>
+        <service android:enabled="true" android:name=".services.UpdateWifiStatusService"></service>
 
     </application>
 

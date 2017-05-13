@@ -5,37 +5,33 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
-import android.view.MenuInflater;
-import android.view.View;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.idanm.wifitimemonitor.activities.EditWifiMonitor;
 import com.example.idanm.wifitimemonitor.activities.ShowWifiMonitor;
+import com.example.idanm.wifitimemonitor.adapters.WifiMonitorEntryAdapter;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.OperationType;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorConnections;
 import com.example.idanm.wifitimemonitor.dataObjects.entityObjects.WifiMonitorEntryEntity;
-import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.SsidName;
 import com.example.idanm.wifitimemonitor.dataObjects.viewObjects.WifiMonitorEntry;
-import com.example.idanm.wifitimemonitor.adapters.WifiMonitorEntryAdapter;
 import com.example.idanm.wifitimemonitor.db.DbHelper;
-import com.example.idanm.wifitimemonitor.receivers.WifiBroadcastReceiver;
-import com.example.idanm.wifitimemonitor.receivers.WifiStatusUpdater;
+import com.example.idanm.wifitimemonitor.services.UpdateWifiStatusServiceManager;
 import com.example.idanm.wifitimemonitor.utils.CONST;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     WifiMonitorEntryAdapter wifiMonitorEntryAdapter = null;
@@ -56,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent,3);
             }
         });
-
+        UpdateWifiStatusServiceManager.getInstance().startUpdateWifiStatusService(this);
         generateWifiMonitorListView();
         this.registerReceiver(mMessageReceiver, new IntentFilter(CONST.UPDATE_UI_ACTION));
     }

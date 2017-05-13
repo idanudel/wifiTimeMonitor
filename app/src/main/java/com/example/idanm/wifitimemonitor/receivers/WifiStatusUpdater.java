@@ -1,7 +1,5 @@
 package com.example.idanm.wifitimemonitor.receivers;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiInfo;
@@ -19,26 +17,27 @@ import java.util.ArrayList;
 
 public class WifiStatusUpdater
 {
-    Context context;
-    private Intent intent;
-    private PendingIntent pendingIntent;
-    private AlarmManager alarmMgr;
-    private static final long FREQUENCY = 60000;
+    private static WifiStatusUpdater wifiStatusUpdaterInstance = null;
 
-    public WifiStatusUpdater(Context context) {
-        this.context = context;
-        alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        intent = new Intent(context, BootBroadcastReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-        try {
-            updateWifiStatus();
-        } catch (Exception e) {
-            Log.e(CONST.TAG,"Failed to update wifiStatus",e);
+    public static WifiStatusUpdater getInstance() {
+        if(wifiStatusUpdaterInstance == null) {
+            wifiStatusUpdaterInstance = new WifiStatusUpdater();
         }
-        setNextAlarm();
+        return wifiStatusUpdaterInstance;
     }
 
-    private void updateWifiStatus() {
+    public void updateWifiStatus(Context context){
+        try {
+            doUpdateWifiStatus(context);
+        }
+        catch (Exception e){
+            Log.e(CONST.TAG,"Failed to update wifiStatus",e);
+        }
+    }
+
+    private WifiStatusUpdater() {}
+
+    private void doUpdateWifiStatus(Context context) {
         boolean isNeedToUpdate = false;
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = wifiManager.getConnectionInfo ();
@@ -98,16 +97,5 @@ public class WifiStatusUpdater
         return ssid.replace("\"","").equals(ssidName.replace("\"",""));
     }
 
-    public void setNextAlarm(){
-        alarmMgr.set(AlarmManager.RTC_WAKEUP, (System.currentTimeMillis() + FREQUENCY), pendingIntent);
-    }
 
-    private void stopAlarms(){
-        alarmMgr.cancel(pendingIntent);
-    }
-    public boolean isAlarmUp(){
-        return (PendingIntent.getBroadcast(context, 0,
-                new Intent(context, BootBroadcastReceiver.class),
-                PendingIntent.FLAG_NO_CREATE) != null);
-    }
 }

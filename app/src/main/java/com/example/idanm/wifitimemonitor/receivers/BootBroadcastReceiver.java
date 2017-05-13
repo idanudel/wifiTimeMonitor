@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.example.idanm.wifitimemonitor.services.UpdateWifiStatusServiceManager;
 import com.example.idanm.wifitimemonitor.utils.CONST;
 
 /**
@@ -14,7 +15,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(CONST.TAG, "ON BOOT CALL START");
-        new WifiStatusUpdater(context);
+        UpdateWifiStatusServiceManager.getInstance().startUpdateWifiStatusService(context);
         Log.i(CONST.TAG, "ON BOOT CALL FINISH");
     }
 }
